@@ -1,7 +1,9 @@
-import { Rule, SchematicContext, Tree, url, apply, template, mergeWith } from '@angular-devkit/schematics';
+import { Rule, SchematicContext, Tree, url, apply, template, mergeWith, SchematicsException, move } from '@angular-devkit/schematics';
+import { buildDefaultPath } from "@schematics/angular/utility/project";
+import { parseName } from "@schematics/angular/utility/parse-name";
 
 import * as path from 'path';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 
 import { Schema } from './schema';
 import { strings } from '@angular-devkit/core';
@@ -10,12 +12,26 @@ export function crud(_options: Schema): Rule {
   return (_tree: Tree, _context: SchematicContext) => {
 
     // const config = readConfig(_tree);
-    const config = { projectConfig: getProjectConfig() };
+    // const config = { projectConfig: getProjectConfig() };
 
-    console.log(config);
-    const sourceParametrizedTemplates = renderTemplate(_options, config);
+    const workspaceConfigBuffer = _tree.read('angular.json');
 
-    return mergeWith(sourceParametrizedTemplates);
+    if (!workspaceConfigBuffer) {
+      throw new SchematicsException('angular.json not found, is it an angular project?');
+    }
+
+    const workspaceConfig = JSON.parse(workspaceConfigBuffer.toString());
+    const projectName  = _options.project || workspaceConfig.defaultProject;
+    const project = workspaceConfig.projects[projectName];
+
+    const defaultProjectPath = buildDefaultPath(project);
+
+    const parsedPath = parseName(defaultProjectPath, _options.name);
+    const { name, path } = parsedPath;
+    
+    const sourceParametrizedTemplates = renderTemplate(_options, name, path);
+
+    return mergeWith(sourceParametrizedTemplates)(_tree, _context);
   };
 }
 
@@ -30,43 +46,20 @@ export function crud(_options: Schema): Rule {
 //   }
 // }
 
-function getProjectConfig(currentPath = __dirname): any {
-  try {
-    const angularJson = fs.existsSync(`${currentPath}/angular.json`);
-
-    if (angularJson) {
-      // TODO: Read and return a json
-      return angularJson;
-    }
-
-    const newPath = path.resolve(currentPath, '..');
-
-    if (process.cwd() === newPath) {
-      throw 'angular.json not found, is it an angular project?';
-    }
-    
-    return getProjectConfig(newPath);
-
-  } catch(error) {
-    console.error(error);
-    return false;
-  }
-}
-
-function renderTemplate(_options: Schema, _config: any) {
+function renderTemplate(_options: Schema, name: any, path: any) {
   const sourceTemplates = url('./templates');
 
   const sourceParametrizedTemplates = apply(sourceTemplates, [
     template({
-      rootDir: 'src',
       size: 600,
-      _config,
       ..._options,
       ...strings,
+      name,
       upperWithUderscore,
       findSharedModule,
       getPathRootDir
-    })
+    }),
+    move(path)
   ]);
 
   return sourceParametrizedTemplates;
