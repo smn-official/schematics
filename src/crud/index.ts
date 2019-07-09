@@ -2,9 +2,6 @@ import { Rule, SchematicContext, Tree, url, apply, template, mergeWith, Schemati
 import { buildDefaultPath } from "@schematics/angular/utility/project";
 import { parseName } from "@schematics/angular/utility/parse-name";
 
-import * as path from 'path';
-// import * as fs from 'fs';
-
 import { Schema } from './schema';
 import { strings } from '@angular-devkit/core';
 
@@ -48,16 +45,16 @@ export function crud(_options: Schema): Rule {
 
 function renderTemplate(_options: Schema, name: any, path: any) {
   const sourceTemplates = url('./templates');
-
+  
   const sourceParametrizedTemplates = apply(sourceTemplates, [
     template({
       size: 600,
       ..._options,
       ...strings,
       name,
+      path: getPathRootDir(path),
       upperWithUderscore,
       findSharedModule,
-      getPathRootDir
     }),
     move(path)
   ]);
@@ -77,7 +74,6 @@ function findSharedModule(): string {
   return '';
 }
 
-function getPathRootDir() {
-  const relative = path.relative(process.cwd(), __dirname);
-  return relative.split(path.sep).join('/');
+function getPathRootDir(path: string) {
+  return path.replace('/', '');
 }
