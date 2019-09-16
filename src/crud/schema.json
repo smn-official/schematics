@@ -28,7 +28,7 @@
         },
         "convertion": {
             "type": "boolean",
-            "description": "If feature is convertion"
+            "description": "If the feature is a convertion"
         }
     }
 }
