@@ -27,7 +27,7 @@ Feito isso, será gerado os seguintes arquivos no seu projeto:
 E você também pode passar alguns argumentos:
 
 | Argumento | Função | Valor default |
-|--|--|--| -- |
+|--|--|--|
 | -- help | Lista as opções disponíveis | |
 | --convertion | Se a tela é uma tela de conversão | false |
 | --route | A url que irá aparecer no browser | |
