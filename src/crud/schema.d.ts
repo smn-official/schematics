@@ -4,4 +4,6 @@ export interface Schema {
     route?: string;
     convertion?: boolean;
     size?: number;
+    module?: string;
+    path?: string
 }

@@ -12,7 +12,7 @@
                 "$source": "argv",
                 "index": 0
             },
-            "x-prompt": "Escreva o nome do crud?"
+            "x-prompt": "Qual o nome do crud?"
         },
         "project": {
             "type": "string",
@@ -29,6 +29,10 @@
         "convertion": {
             "type": "boolean",
             "description": "If the feature is a convertion"
+        },
+        "size": {
+            "type": "number",
+            "description": "Screen size"
         }
     }
 }

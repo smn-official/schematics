@@ -1,16 +1,12 @@
 import { Rule, SchematicContext, Tree, url, apply, template, mergeWith, SchematicsException, move } from '@angular-devkit/schematics';
 import { buildDefaultPath } from "@schematics/angular/utility/project";
 import { parseName } from "@schematics/angular/utility/parse-name";
-
 import { Schema } from './schema';
 import { strings } from '@angular-devkit/core';
+import { importModule } from '../utils/import-utils';
 
 export function crud(_options: Schema): Rule {
   return (_tree: Tree, _context: SchematicContext) => {
-
-    // const config = readConfig(_tree);
-    // const config = { projectConfig: getProjectConfig() };
-
     const workspaceConfigBuffer = _tree.read('angular.json');
 
     if (!workspaceConfigBuffer) {
@@ -25,32 +21,23 @@ export function crud(_options: Schema): Rule {
 
     const parsedPath = parseName(defaultProjectPath, _options.name);
     const { name, path } = parsedPath;
-    
+
     const sourceParametrizedTemplates = renderTemplate(_options, name, path);
+
+    importModule(_tree, path, name);
 
     return mergeWith(sourceParametrizedTemplates)(_tree, _context);
   };
 }
-
-// function readConfig(_tree: Tree) {
-//   const buffer = _tree.read('./smn-schematics.json');
-
-//   if (buffer) {
-//     // TODO: Validate configs
-//     return JSON.parse(buffer.toString('utf8'));
-//   } else {
-//     throw new SchematicsException('Error to read smn-schematics.json');
-//   }
-// }
 
 function renderTemplate(_options: Schema, name: any, path: any) {
   const sourceTemplates = url('./templates');
   
   const sourceParametrizedTemplates = apply(sourceTemplates, [
     template({
-      size: 600,
       ..._options,
       ...strings,
+      size: _options.size || 600,
       name,
       path: getPathRootDir(path),
       upperWithUderscore,
