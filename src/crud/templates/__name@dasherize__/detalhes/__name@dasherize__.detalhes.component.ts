@@ -9,7 +9,6 @@ import {ApiService} from '../../../../../core/api/api.service';
     templateUrl: './<%= dasherize(name) %>.detalhes.component.html',
     styleUrls: ['<%= dasherize(name) %>.detalhes.component.scss']
 })
-
 export class <%= classify(name) %>DetalhesComponent extends Base implements OnInit {
     
     params: any;

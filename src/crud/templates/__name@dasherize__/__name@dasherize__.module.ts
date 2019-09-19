@@ -20,6 +20,5 @@ import { <%= classify(name) %>DetalhesComponent } from './detalhes/<%= dasherize
     providers: [],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-
 export class <%= classify(name) %>Module {
 }
