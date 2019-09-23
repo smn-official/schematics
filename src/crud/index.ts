@@ -1,20 +1,36 @@
-import { Rule, SchematicContext, Tree, url, apply, template, mergeWith, SchematicsException, move, chain, branchAndMerge } from '@angular-devkit/schematics';
+import {
+  Rule,
+  SchematicContext,
+  Tree,
+  url,
+  apply,
+  template,
+  mergeWith,
+  SchematicsException,
+  move,
+  chain,
+  branchAndMerge
+} from "@angular-devkit/schematics";
 import { buildDefaultPath } from "@schematics/angular/utility/project";
 import { parseName } from "@schematics/angular/utility/parse-name";
-import { Schema } from './schema';
-import { strings } from '@angular-devkit/core';
-import { importClosestModule, importSharedModule } from '../utils/import-utils';
+import { Schema } from "./schema";
+import { strings } from "@angular-devkit/core";
+
+import { importClosestModule, importSharedModule } from "../utils/rules";
+import { upperWithUderscore } from "../utils/utils";
 
 export function crud(_options: Schema): Rule {
   return (_tree: Tree, _context: SchematicContext) => {
-    const workspaceConfigBuffer = _tree.read('angular.json');
+    const workspaceConfigBuffer = _tree.read("angular.json");
 
     if (!workspaceConfigBuffer) {
-      throw new SchematicsException('angular.json not found, is it an angular project?');
+      throw new SchematicsException(
+        "angular.json not found, is it an angular project?"
+      );
     }
 
     const workspaceConfig = JSON.parse(workspaceConfigBuffer.toString());
-    const projectName  = _options.project || workspaceConfig.defaultProject;
+    const projectName = _options.project || workspaceConfig.defaultProject;
     const project = workspaceConfig.projects[projectName];
 
     const defaultProjectPath = buildDefaultPath(project);
@@ -23,13 +39,15 @@ export function crud(_options: Schema): Rule {
     const { name, path } = parsedPath;
 
     const sourceParametrizedTemplates = renderTemplate(_options, name, path);
-    importClosestModule(_tree, path, name);
 
     const rule = chain([
-      branchAndMerge(chain([
-        mergeWith(sourceParametrizedTemplates),
-        importSharedModule(path, name)
-      ])),
+      branchAndMerge(
+        chain([
+          importClosestModule(path, name),
+          mergeWith(sourceParametrizedTemplates),
+          importSharedModule(path, name)
+        ])
+      )
     ]);
 
     return rule(_tree, _context);
@@ -37,8 +55,8 @@ export function crud(_options: Schema): Rule {
 }
 
 function renderTemplate(_options: Schema, name: any, path: any) {
-  const sourceTemplates = url('./templates');
-  
+  const sourceTemplates = url("./templates");
+
   const sourceParametrizedTemplates = apply(sourceTemplates, [
     template({
       ..._options,
@@ -46,8 +64,7 @@ function renderTemplate(_options: Schema, name: any, path: any) {
       size: _options.size || 600,
       name,
       path: getPathRootDir(path),
-      upperWithUderscore,
-      findSharedModule,
+      upperWithUderscore
     }),
     move(path)
   ]);
@@ -55,18 +72,6 @@ function renderTemplate(_options: Schema, name: any, path: any) {
   return sourceParametrizedTemplates;
 }
 
-function upperWithUderscore(value: string): string {
-  if (!value) {
-    return '';
-  }
-
-  return strings.underscore(value).toUpperCase();
-}
-
-function findSharedModule(): string {
-  return '';
-}
-
 function getPathRootDir(path: string) {
-  return path.replace('/', '');
+  return path.replace("/", "");
 }
