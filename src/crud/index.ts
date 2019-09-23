@@ -1,9 +1,9 @@
-import { Rule, SchematicContext, Tree, url, apply, template, mergeWith, SchematicsException, move } from '@angular-devkit/schematics';
+import { Rule, SchematicContext, Tree, url, apply, template, mergeWith, SchematicsException, move, chain, branchAndMerge } from '@angular-devkit/schematics';
 import { buildDefaultPath } from "@schematics/angular/utility/project";
 import { parseName } from "@schematics/angular/utility/parse-name";
 import { Schema } from './schema';
 import { strings } from '@angular-devkit/core';
-import { importModule } from '../utils/import-utils';
+import { importClosestModule, importSharedModule } from '../utils/import-utils';
 
 export function crud(_options: Schema): Rule {
   return (_tree: Tree, _context: SchematicContext) => {
@@ -23,10 +23,16 @@ export function crud(_options: Schema): Rule {
     const { name, path } = parsedPath;
 
     const sourceParametrizedTemplates = renderTemplate(_options, name, path);
+    importClosestModule(_tree, path, name);
 
-    importModule(_tree, path, name);
+    const rule = chain([
+      branchAndMerge(chain([
+        mergeWith(sourceParametrizedTemplates),
+        importSharedModule(path, name)
+      ])),
+    ]);
 
-    return mergeWith(sourceParametrizedTemplates)(_tree, _context);
+    return rule(_tree, _context);
   };
 }
 
