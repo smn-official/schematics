@@ -22,9 +22,6 @@ export function readIntoSourceFile(host: Tree, modulePath: string): ts.SourceFil
 
 export function updateTree(_tree: Tree, path: string, declarationChanges: Change[]) {
   const declarationRecorder = _tree.beginUpdate(path);
-  
-  console.log(path);
-  console.log(declarationChanges);
 
   declarationChanges.forEach((change: any) => {
     if (change instanceof InsertChange) {
