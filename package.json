@@ -1,6 +1,6 @@
 {
   "name": "@smn-official/schematics",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A schematics to Angular applications",
   "private": false,
   "scripts": {
