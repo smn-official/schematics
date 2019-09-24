@@ -41,3 +41,11 @@ export function upperWithUderscore(value: string): string {
 
   return strings.underscore(value).toUpperCase();
 }
+
+export function namedCapitalize(value: string): string {
+  if (!value) {
+    return '';
+  }
+
+  return strings.capitalize(value).replace(/\-/, ' ');
+}

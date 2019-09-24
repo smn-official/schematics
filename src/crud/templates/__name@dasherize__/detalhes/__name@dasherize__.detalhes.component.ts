@@ -1,6 +1,6 @@
-import {Component, OnInit, AfterViewInit, OnDestroy, ElementRef} from '@angular/core';
-import {Location} from '@angular/common';
-import {ActivatedRoute} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-<%= dasherize(name) %>-detalhes',
@@ -12,7 +12,7 @@ export class <%= classify(name) %>DetalhesComponent extends Base implements OnIn
 
     constructor(private route: ActivatedRoute,
                 private location: Location) {
-        super('Titulo', <%= size %>);
+        super('<%= namedCapitalize(projectName) %> | <%= name %>', <%= size %>);
     }
 
     ngOnInit() {

@@ -17,7 +17,7 @@ import { Schema } from "./schema";
 import { strings } from "@angular-devkit/core";
 
 import { importClosestModule, importSharedModule } from "../utils/rules";
-import { upperWithUderscore } from "../utils/utils";
+import { upperWithUderscore, namedCapitalize } from "../utils/utils";
 
 export function crud(_options: Schema): Rule {
   return (_tree: Tree, _context: SchematicContext) => {
@@ -38,7 +38,7 @@ export function crud(_options: Schema): Rule {
     const parsedPath = parseName(defaultProjectPath, _options.name);
     const { name, path } = parsedPath;
 
-    const sourceParametrizedTemplates = renderTemplate(_options, name, path);
+    const sourceParametrizedTemplates = renderTemplate(_options, name, path, projectName);
 
     const rule = chain([
       branchAndMerge(
@@ -54,7 +54,7 @@ export function crud(_options: Schema): Rule {
   };
 }
 
-function renderTemplate(_options: Schema, name: any, path: any) {
+function renderTemplate(_options: Schema, name: any, path: any, projectName: any) {
   const sourceTemplates = url("./templates");
 
   const sourceParametrizedTemplates = apply(sourceTemplates, [
@@ -63,8 +63,10 @@ function renderTemplate(_options: Schema, name: any, path: any) {
       ...strings,
       size: _options.size || 600,
       name,
+      projectName,
       path: getPathRootDir(path),
-      upperWithUderscore
+      upperWithUderscore,
+      namedCapitalize
     }),
     move(path)
   ]);

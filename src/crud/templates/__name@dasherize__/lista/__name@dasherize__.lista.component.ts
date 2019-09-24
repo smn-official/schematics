@@ -9,7 +9,7 @@ import { ApiService } from '../../../../../core/api/api.service';
 export class <%= classify(name) %>ListaComponent extends Base implements OnInit {
 
     constructor(private api: ApiService, private element: ElementRef) {
-        super('Titulo', <%= size %>);
+        super('<%= namedCapitalize(projectName) %> | <%= name %>', <%= size %>);
     }
 
     ngOnInit() {
